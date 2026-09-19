@@ -35,6 +35,7 @@ required_files=(
   docs/decisions/README.md
   docs/PROJECT_SETUP.md
   scripts/initialize.sh
+  scripts/configure-labels.sh
   src/README.md
   tests/README.md
 )
@@ -45,6 +46,7 @@ done
 
 [[ -x ci/verify.sh ]] || fail 'ci/verify.sh must be executable'
 [[ -x scripts/initialize.sh ]] || fail 'scripts/initialize.sh must be executable'
+[[ -x scripts/configure-labels.sh ]] || fail 'scripts/configure-labels.sh must be executable'
 
 for heading in \
   '## Status' \

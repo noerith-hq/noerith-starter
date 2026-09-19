@@ -94,4 +94,4 @@ if [[ -n "${placeholder_hits}" ]]; then
   fail 'Required project placeholders remain after initialization.'
 fi
 
-printf 'Initialized %s. Run ./ci/verify.sh before opening the first pull request.\n' "${project_name}"
+printf 'Initialized %s. Run ./scripts/configure-labels.sh and ./ci/verify.sh before opening the first pull request.\n' "${project_name}"
