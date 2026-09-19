@@ -10,6 +10,6 @@ permissions:
 
 jobs:
   verify:
-    uses: noerith-hq/.github/.github/workflows/secure-ci.yml@4adc046611ed50a0ce8c99e36a461ca4cc35647b
+    uses: noerith-hq/.github/.github/workflows/secure-ci.yml@fb0f1e4e8946380d2ef121de0bbb004b2786de15
     permissions:
       contents: read

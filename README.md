@@ -1,6 +1,6 @@
-# {{PROJECT_NAME}}
+# NOERITH Repository Starter
 
-> {{PROJECT_DESCRIPTION}}
+> Secure, reusable project foundation for NOERITH repositories.
 
 ## Status
 
@@ -64,4 +64,3 @@ Follow the NOERITH [contribution guide](https://github.com/noerith-hq/.github/bl
 ## License
 
 This starter is licensed under the [Apache License 2.0](LICENSE). Confirm the appropriate license before applying it to a product repository.
-Secure, reusable project foundation for NOERITH repositories.

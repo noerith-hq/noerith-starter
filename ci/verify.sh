@@ -63,20 +63,42 @@ done
 
 require_contains 'pull_request:' .github/workflows/ci.yml
 require_contains 'push:' .github/workflows/ci.yml
-require_contains 'noerith-hq/.github/.github/workflows/secure-ci.yml@4adc046611ed50a0ce8c99e36a461ca4cc35647b' .github/workflows/ci.yml
+require_contains 'noerith-hq/.github/.github/workflows/secure-ci.yml@fb0f1e4e8946380d2ef121de0bbb004b2786de15' .github/workflows/ci.yml
 require_contains 'contents: read' .github/workflows/ci.yml
 require_contains 'workflow_dispatch:' .github/workflows/release.yml
 require_contains 'contents: write' .github/workflows/release.yml
 require_contains "github.ref == 'refs/heads/main'" .github/workflows/release.yml
 require_contains 'SEMVER_PATTERN=' .github/workflows/release.yml
+require_contains 'GH_TOKEN: ${{ github.token }}' .github/workflows/release.yml
+require_contains '--repo "${GITHUB_REPOSITORY}"' .github/workflows/release.yml
 
 if grep -Eq '^[[:space:]]*[A-Za-z0-9_-]+:[[:space:]]*write([[:space:]#]|$)' .github/workflows/ci.yml; then
   fail 'CI must not request write permissions'
 fi
 
+workflow_roots=(.github/workflows)
+if [[ -d .github/actions ]]; then
+  workflow_roots+=(.github/actions)
+fi
+
 while IFS= read -r workflow_file; do
   while IFS= read -r line; do
-    if [[ "${line}" =~ ^[[:space:]]*uses:[[:space:]]*([^[:space:]#]+) ]]; then
+    if [[ "${line}" =~ ^[[:space:]]*permissions:[[:space:]]*(read-all|write-all)([[:space:]#]|$) ]]; then
+      fail "Broad workflow permissions are not allowed in ${workflow_file}: ${BASH_REMATCH[1]}"
+    fi
+
+    if [[ "${line}" =~ ^[[:space:]]*permissions:[[:space:]]*\{.*write.*\} ]]; then
+      fail "Inline write permissions are not allowed in ${workflow_file}"
+    fi
+
+    if [[ "${line}" =~ ^[[:space:]]*([A-Za-z0-9_-]+):[[:space:]]*write([[:space:]#]|$) ]]; then
+      permission="${BASH_REMATCH[1]}"
+      if [[ "${workflow_file}" != '.github/workflows/release.yml' || "${permission}" != 'contents' ]]; then
+        fail "Unexpected write permission in ${workflow_file}: ${permission}"
+      fi
+    fi
+
+    if [[ "${line}" =~ ^[[:space:]]*-?[[:space:]]*uses:[[:space:]]*([^[:space:]#]+) ]]; then
       reference="${BASH_REMATCH[1]}"
       if [[ "${reference}" == ./* ]]; then
         continue
@@ -85,7 +107,7 @@ while IFS= read -r workflow_file; do
       [[ "${sha}" =~ ^[0-9a-fA-F]{40}$ ]] || fail "Unpinned action or reusable workflow in ${workflow_file}: ${reference}"
     fi
   done < "${workflow_file}"
-done < <(find .github/workflows -type f -name '*.yml' -print)
+done < <(find "${workflow_roots[@]}" -type f \( -name '*.yml' -o -name '*.yaml' \) -print)
 
 secret_pattern='gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----'
 secret_hits="$(find . -type f ! -path './.git/*' ! -name LICENSE -exec grep -nE "${secret_pattern}" {} + 2>/dev/null || true)"

@@ -74,6 +74,8 @@ replace_in_file() {
   local file="$1"
   local temporary_file="${file}.tmp"
   sed \
+    -e "1s|^# NOERITH Repository Starter$|# ${escaped_name}|" \
+    -e "s|^> Secure, reusable project foundation for NOERITH repositories\.$|> ${escaped_description}|" \
     -e "s|[{][{]PROJECT_NAME[}][}]|${escaped_name}|g" \
     -e "s|[{][{]PROJECT_DESCRIPTION[}][}]|${escaped_description}|g" \
     -e "s|[{][{]PROJECT_PROBLEM[}][}]|${escaped_problem}|g" \
