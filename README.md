@@ -29,6 +29,8 @@ This starter is technology-neutral. Select the application stack in the first ar
 
 ## Testing
 
+Automatic CI is not configured, following the organization policy, until the user explicitly requests it. Run the local checks below and include results in pull requests. Manual releases remain separate.
+
 Run the baseline contract locally:
 
 ```bash
